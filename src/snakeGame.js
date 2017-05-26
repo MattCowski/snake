@@ -8,7 +8,6 @@ export default function snakeGame(gameBoard, commands) {
     board: gameBoard,
     cols: gameBoard[0].length,
     rows: gameBoard.length,
-    // firstTailIndex,
     tailIndexes: [],
     completedMoves: [],
     gameInProgress: false

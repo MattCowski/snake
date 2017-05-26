@@ -9,16 +9,6 @@
 
   export const getDirection = (board, i)=> board[i]
 
-  export const getNeighborCell = (board, head, ignoredCells, rowLen)=> {
-    const newIndex = ignoredCells.length?ignoredCells[ignoredCells.length-1]:head//
-    if (board[newIndex-1]=="*"&&!ignoredCells.includes(newIndex-1)) return newIndex-1
-    if (board[newIndex+1]=="*"&&!ignoredCells.includes(newIndex+1)) return newIndex+1
-    if (board[newIndex+rowLen]=="*"&&!ignoredCells.includes(newIndex+rowLen)) return newIndex+rowLen
-    if (board[newIndex-rowLen]=="*"&&!ignoredCells.includes(newIndex-rowLen)) return newIndex-rowLen
-    console.log('returning null')
-    return undefined
-  }
-
   export const getNextHeadIndex = (action, direction, index, cols) => {
     if (action!='F') return index
     switch(direction) {
@@ -80,20 +70,9 @@
     return result
   }
 
-  // export const getTailIndexes = (board,headIndex,rowLen)=>{
-  //   return getTailCells(board).reduce((acc, cur, curIndex)=>{
-  //     const tailindex = getNeighborCell(board, headIndex,acc,rowLen)
-  //     const result = tailindex==undefined?acc:[...acc, tailindex]
-  //     // console.log(headIndex, result, tailindex==undefined?'undefined':'')
-  //     return result
-  //   },[])// return [6,7,11]
-  // }
-
   export const getFirstTailCellIndex = (flatBoard, cols) => {
-    // const flatBoard = flattenBoard(board)
     const head = getHead(flatBoard)
     const direction = getDirection(flatBoard, head)
-    // const cols = board[0].length
     switch(direction){
       case '<': return head+1
       case '>': return head-1
@@ -103,7 +82,6 @@
   }
 
   export const getNextPosition = (neckBodyTailIndex, cols, flatBoard, tailIndexes)=> {
-    // console.log(neckBodyTailIndex, 'cols', 'flatBoard', tailIndexes)
     const availablePositions = [
       neckBodyTailIndex-1,
       neckBodyTailIndex+1,
@@ -117,19 +95,15 @@
 }
 //ln 255
   export const getTailIndexes = ( cols, flatBoard, tailIndexes, neckIndex)=>{
-    //TODO neckIndex is the old headIndex
     return getTailCells(flatBoard).reduce((acc,cur,index)=>{
-      var neckBodyTailIndex = acc[acc.length-1]//||neckIndex
-      // console.log(neckBodyTailIndex+" should be next to headIndex")
-      // console.log('acc is', acc)
+      var neckBodyTailIndex = acc[acc.length-1]
       const val = getNextPosition(
-        neckBodyTailIndex,//lastTailIndex,
+        neckBodyTailIndex,
         cols,
         flatBoard,
         acc//tailIndexes
       )
       const result = [...acc, ...val]
-      // console.log('returns',result)
       return result
-    },[neckIndex])//.reverse()
+    },[neckIndex])
   }
