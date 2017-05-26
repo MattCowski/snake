@@ -25,6 +25,7 @@ export default function snakeGame(gameBoard, commands) {
     if (turn==0) {
       // initialize tailIndexes
       neckIndex = api.getFirstTailCellIndex(flatGameBoard, state.cols)
+      // neckIndex = api.getNextHeadIndex('F',direction,headIndex,state.cols)
       tailIndexes = api.getTailIndexes(
         state.cols,
         flatGameBoard,

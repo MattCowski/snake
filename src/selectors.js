@@ -21,34 +21,37 @@
   }
 
   export const getNextHead = (direction, command) => {
-    const up = {head:'^',direction:'up'}
-    const down = {head:'v', direction:'down'}
-    const left = {head:'<',direction:'left'}
-    const right = {head:'>',direction:'right'}
-    switch(direction) {
-      case '<':
-        if(command=='F') return left
-        if(command=='R') return up
-        if(command=='L') return down
-        return
-      case '>':
-        if(command=='F') return right
-        if(command=='R') return down
-        if(command=='L') return up
-        return
-      case '^':
-        if(command=='F') return up
-        if(command=='R') return right
-        if(command=='L') return left
-        return
-      case 'v':
-        if(command=='F') return down
-        if(command=='R') return left
-        if(command=='L') return right
-        return
+    switch(true) {
+      case (direction=='<') && (command=='R'):
+      case (direction=='>') && (command=='L'):
+      case (direction=='^') && (command=='F'):
+        return {head:'^',direction:'up'}
+      case (direction=='>') && (command=='R'):
+      case (direction=='<') && (command=='L'):
+      case (direction=='v') && (command=='F'):
+        return {head:'v', direction:'down'}
+      case (direction=='>') && (command=='F'):
+      case (direction=='^') && (command=='R'):
+      case (direction=='v') && (command=='L'):
+        return {head:'>',direction:'right'}
+      case (direction=='v') && (command=='R'):
+      case (direction=='<') && (command=='F'):
+      case (direction=='^') && (command=='L'):
+        return {head:'<',direction:'left'}
       default: throw new Error('direction not defined')
     }
   }
+
+  export const getFirstTailCellIndex = (flatBoard, cols) => {
+      const head = getHead(flatBoard)
+      const direction = getDirection(flatBoard, head)
+      switch(direction){
+        case '<': return head+1
+        case '>': return head-1
+        case 'v': return head-cols
+        case '^': return head+cols
+      }
+    }
 
   export const isOutOfBounds = (state, nextHeadIndex, leftOrRight, currHeadIndex)=>{
     return (leftOrRight == 'right'&&getBoundaryIndexes(state).right.includes(currHeadIndex))
@@ -68,17 +71,6 @@
     return result
   }
 
-  export const getFirstTailCellIndex = (flatBoard, cols) => {
-    const head = getHead(flatBoard)
-    const direction = getDirection(flatBoard, head)
-    switch(direction){
-      case '<': return head+1
-      case '>': return head-1
-      case 'v': return head-cols
-      case '^': return head+cols
-    }
-  }
-
   export const getNextPosition = (neckBodyTailIndex, cols, flatBoard, tailIndexes)=> {
     const availablePositions = [
       neckBodyTailIndex-1,
@@ -91,7 +83,7 @@
     })
     return (result.length>1) ? [result[0]]: result
 }
-//ln 255
+
   export const getTailIndexes = ( cols, flatBoard, tailIndexes, neckIndex)=>{
     return getTailCells(flatBoard).reduce((acc,cur,index)=>{
       var neckBodyTailIndex = acc[acc.length-1]
