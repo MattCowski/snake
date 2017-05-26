@@ -10,12 +10,7 @@
   export const getDirection = (board, i)=> board[i]
 
   export const getNeighborCell = (board, head, ignoredCells, rowLen)=> {
-    // check possible cells that arent already acounted for
-
     const newIndex = ignoredCells.length?ignoredCells[ignoredCells.length-1]:head//
-    // if (!ignoredCells.length) console.log('no ignoredCells')
-    // console.log('head'+head,'ignoredCells'+ignoredCells, 'newIndex'+newIndex, 'rowLen'+rowLen)//[]
-    // console.log(i, ignoredCells, newIndex)
     if (board[newIndex-1]=="*"&&!ignoredCells.includes(newIndex-1)) return newIndex-1
     if (board[newIndex+1]=="*"&&!ignoredCells.includes(newIndex+1)) return newIndex+1
     if (board[newIndex+rowLen]=="*"&&!ignoredCells.includes(newIndex+rowLen)) return newIndex+rowLen
@@ -23,6 +18,18 @@
     console.log('returning null')
     return undefined
   }
+
+  export const getNextHeadIndex = (action, direction, index, cols) => {
+    if (action!='F') return index
+    switch(direction) {
+      case '<': return index-1
+      case '>': return index+1
+      case '^': return index-cols
+      case 'v': return index+cols
+      default: throw new Error('direction is not defined')
+    }
+  }
+
   export const getFutureCell =(direction,index, command, rowLen)=>{
     const v = command=='F'?rowLen:0
     const h = command=='F'?1:0
@@ -55,11 +62,11 @@
     }
   }
 
-  export const isOutOfBounds = (state, dir, index, command, leftOrRight, headIndex)=>{
-    return (leftOrRight == 'right'&&getBoundaryIndexes(state).right.includes(headIndex))
-    || (leftOrRight == 'left'&&getBoundaryIndexes(state).left.includes(headIndex))
-    || (index < 0)
-    || (index >= flattenBoard(state.board).length)
+  export const isOutOfBounds = (state, nextHeadIndex, leftOrRight, currHeadIndex)=>{
+    return (leftOrRight == 'right'&&getBoundaryIndexes(state).right.includes(currHeadIndex))
+    || (leftOrRight == 'left'&&getBoundaryIndexes(state).left.includes(currHeadIndex))
+    || (nextHeadIndex < 0)
+    || (nextHeadIndex >= flattenBoard(state.board).length)
   }
   export const getBoundaryIndexes = ({rows,cols})=>{
     const result = {
@@ -82,11 +89,11 @@
   //   },[])// return [6,7,11]
   // }
 
-  export const getFirstTailCellIndex = (board) => {
-    const flatBoard = flattenBoard(board)
+  export const getFirstTailCellIndex = (flatBoard, cols) => {
+    // const flatBoard = flattenBoard(board)
     const head = getHead(flatBoard)
     const direction = getDirection(flatBoard, head)
-    const cols = board[0].length
+    // const cols = board[0].length
     switch(direction){
       case '<': return head+1
       case '>': return head-1
@@ -95,36 +102,34 @@
     }
   }
 
-  export const getNextPosition = (lastTailIndex, cols, flatBoard, tailIndexes)=> {
-    // console.log(lastTailIndex, 'cols', 'flatBoard', tailIndexes)
+  export const getNextPosition = (neckBodyTailIndex, cols, flatBoard, tailIndexes)=> {
+    // console.log(neckBodyTailIndex, 'cols', 'flatBoard', tailIndexes)
     const availablePositions = [
-      lastTailIndex-1,
-      lastTailIndex+1,
-      lastTailIndex-cols,
-      lastTailIndex+cols,
+      neckBodyTailIndex-1,
+      neckBodyTailIndex+1,
+      neckBodyTailIndex-cols,
+      neckBodyTailIndex+cols,
     ]
-    return availablePositions.filter((position)=>{
+    const result = availablePositions.filter((position)=>{
       return flatBoard[position]=="*"&&!tailIndexes.includes(position)
     })
+    return (result.length>1) ? [result[0]]: result
 }
 //ln 255
-  export const getTailIndexes = ( cols, flatBoard, tailIndexes)=>{
-    var lastTailIndex = tailIndexes[tailIndexes.length-1]
-    console.log('issue here? lastTail:',lastTailIndex)
+  export const getTailIndexes = ( cols, flatBoard, tailIndexes, neckIndex)=>{
+    //TODO neckIndex is the old headIndex
     return getTailCells(flatBoard).reduce((acc,cur,index)=>{
-      var lastTail = acc[acc.length-1]||lastTailIndex
+      var neckBodyTailIndex = acc[acc.length-1]//||neckIndex
+      // console.log(neckBodyTailIndex+" should be next to headIndex")
       // console.log('acc is', acc)
       const val = getNextPosition(
-        lastTail,//lastTailIndex,
+        neckBodyTailIndex,//lastTailIndex,
         cols,
         flatBoard,
         acc//tailIndexes
       )
       const result = [...acc, ...val]
-      console.log('returns',result)
+      // console.log('returns',result)
       return result
-    },[lastTailIndex])//.reverse()
-
-
-
+    },[neckIndex])//.reverse()
   }
