@@ -34,8 +34,8 @@ export default function snakeGame(gameBoard, commands) {
     }
 
     const nextHeadIndex = api.getNextHeadIndex(action, direction, headIndex, state.cols)
-    const nextDirectionStr = api.getFutureCell(direction,headIndex, action, state.cols).direction
-    const nextHeadSymbol = api.getFutureCell(direction,headIndex, action, state.cols).head
+    const nextDirectionStr = api.getNextHead(direction, action).direction
+    const nextHeadSymbol = api.getNextHead(direction, action).head
     const nextHeadOutOfBounds = api.isOutOfBounds(
       state, nextHeadIndex, nextDirectionStr, headIndex
     )|| tailIndexes.includes(nextHeadIndex)

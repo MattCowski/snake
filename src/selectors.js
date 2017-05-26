@@ -20,13 +20,11 @@
     }
   }
 
-  export const getFutureCell =(direction,index, command, rowLen)=>{
-    const v = command=='F'?rowLen:0
-    const h = command=='F'?1:0
-    const up = {index:index-v,head:'^',direction:'up'}
-    const down = {index:index+v,head:'v', direction:'down'}
-    const left = {index:index-h,head:'<',direction:'left'}
-    const right = {index:index+h,head:'>',direction:'right'}
+  export const getNextHead = (direction, command) => {
+    const up = {head:'^',direction:'up'}
+    const down = {head:'v', direction:'down'}
+    const left = {head:'<',direction:'left'}
+    const right = {head:'>',direction:'right'}
     switch(direction) {
       case '<':
         if(command=='F') return left
@@ -48,7 +46,7 @@
         if(command=='R') return left
         if(command=='L') return right
         return
-      default: return index
+      default: throw new Error('direction not defined')
     }
   }
 
