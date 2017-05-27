@@ -28,6 +28,7 @@ const App = ({board, gameOver, directionStr, headIndex, completedMoves}) =>{
         <img src={logo} className="App-logo" alt="logo" />
         <h2>Snake</h2>
       </div>
+      {!completedMoves.length && <p>{'To play, use arrow keys: < ^ >'}</p>}
       {gameOver && <p>Game Over - refresh to play again</p>}
       {board.map((row)=><Row>{row}</Row>)}
       <h3>Stats</h3>
