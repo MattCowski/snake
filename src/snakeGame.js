@@ -1,7 +1,14 @@
 import * as api from './selectors'
 
-export default function snakeGame(gameBoard, commands) {
-  const actions = commands.split('') // e.g. ["F","R","L"]
+  const gameBoard = [
+    [".",".",".",".",".",".",".",".","."],
+    [".","*","*","*","*",">",".",".","."],
+    [".",".",".",".",".",".",".",".","."],
+    [".",".",".",".",".",".",".",".","."],
+    [".",".",".",".",".",".",".",".","."],
+    [".",".",".",".",".",".",".",".","."],
+    [".",".",".",".",".",".",".",".","."]
+  ]
 
 
   const initialState = {
@@ -13,8 +20,12 @@ export default function snakeGame(gameBoard, commands) {
     gameInProgress: false
   }
 
-  const reducer = (state = initialState, action, turn) => {
-
+//shared for use by standalone snakeGame() or the playable redux implementation
+  export const reducer = (state = initialState, action, turn) => {
+    if (action.type) { //hack for redux compatibility
+      action = action.type
+      if ((action == '@@redux/INIT')) return state
+    }
     if (state.gameOver) return state
     const flatGameBoard = api.flattenBoard(state.board)
     const headIndex = api.getHead(flatGameBoard) // the state's current / prev head index
@@ -92,6 +103,15 @@ export default function snakeGame(gameBoard, commands) {
 
   }
 
-  const store = actions.reduce(reducer, undefined)
+// standalone function used to get final result of the game
+export default function snakeGame(gameBoard, commands) {
+  const actions = commands.split('') // e.g. ["F","R","L"]
+
+  initialState.board = gameBoard
+  initialState.cols = gameBoard[0].length
+  initialState.rows = gameBoard.length
+
+
+  const store = actions.reduce(reducer, initialState)
   return store.board
 }
